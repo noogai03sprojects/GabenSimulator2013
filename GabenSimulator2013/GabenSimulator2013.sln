@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GabenSimulator2013", "GabenSimulator2013\GabenSimulator2013\GabenSimulator2013.csproj", "{5C4C0F42-D25B-4697-A722-C4F1CF1808CA}"
+EndProject
+Project("{96E2B04D-8817-42C6-938A-82C39BA4D311}") = "GabenSimulator2013Content", "GabenSimulator2013\GabenSimulator2013Content\GabenSimulator2013Content.contentproj", "{94146BDF-5792-4FEB-A055-FDBCE4F73269}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5C4C0F42-D25B-4697-A722-C4F1CF1808CA}.Debug|x86.ActiveCfg = Debug|x86
+		{5C4C0F42-D25B-4697-A722-C4F1CF1808CA}.Debug|x86.Build.0 = Debug|x86
+		{5C4C0F42-D25B-4697-A722-C4F1CF1808CA}.Release|x86.ActiveCfg = Release|x86
+		{5C4C0F42-D25B-4697-A722-C4F1CF1808CA}.Release|x86.Build.0 = Release|x86
+		{94146BDF-5792-4FEB-A055-FDBCE4F73269}.Debug|x86.ActiveCfg = Debug|x86
+		{94146BDF-5792-4FEB-A055-FDBCE4F73269}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
