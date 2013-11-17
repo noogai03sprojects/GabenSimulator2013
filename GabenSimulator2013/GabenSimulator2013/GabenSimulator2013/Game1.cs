@@ -19,13 +19,15 @@ namespace GabenSimulator2013
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        SpriteBatch spriteBatch;        
 
-        SpriteFont Font;
+        TaskManager TaskManager;
+        EmployeeManager EmployeeManager;
+        TimingManager TimingManager;        
 
-        TaskManager Manager;
+        bool isIntro = true;
 
-        Timer timer;
+        Random random = new Random();
 
         public Game1()
         {
@@ -42,11 +44,20 @@ namespace GabenSimulator2013
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            graphics.PreferredBackBufferWidth = 1000;
+            graphics.PreferredBackBufferHeight = 600;
+            graphics.ApplyChanges();
 
-            timer = new Timer(1000);
-            timer.
+            TimingManager = new TimingManager();
+            TaskManager = new TaskManager();
+            EmployeeManager = new EmployeeManager();
 
-            Manager = new TaskManager();
+            TimingManager.Second += UpdateManagers;
+            TimingManager.NewEmployee += NewEmployee;
+            TimingManager.StartTimers();
+
+            //TimingManager.UpdateTimer_Elapsed
+            EmployeeManager.AddEmployee();
 
             base.Initialize();
         }
@@ -60,7 +71,10 @@ namespace GabenSimulator2013
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            Font = Content.Load<SpriteFont>("Font");
+            Art.LoadContent(Content);         
+            //timer.Elapsed += Tick;
+
+            
 
             // TODO: use this.Content to load your game content here
         }
@@ -81,13 +95,44 @@ namespace GabenSimulator2013
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            Input.Update();
+
             // Allows the game to exit
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
                 this.Exit();
 
+            if (TaskManager.HalfLife3.IsFinished)
+                GameOver();
+
+            KeyboardState state = Keyboard.GetState();
+            if (state.IsKeyDown(Keys.Enter))
+                isIntro = false;
+
             // TODO: Add your update logic here
 
+            //color = Color.Lerp(color, newColor, 0.01f);
+
             base.Update(gameTime);
+        }
+
+        public void GameOver()
+        {
+
+        }
+
+        public void UpdateManagers()
+        {
+            if (!isIntro)
+            {
+                EmployeeManager.Update();
+                TaskManager.Update();
+            }
+        }
+
+        public void NewEmployee()
+        {
+            if (!isIntro)
+                EmployeeManager.AddEmployee();
         }
 
         /// <summary>
@@ -97,18 +142,37 @@ namespace GabenSimulator2013
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            if (isIntro)
+            {
+                
 
-            spriteBatch.Begin();
+                spriteBatch.Begin();
 
-            spriteBatch.DrawString(Font, @"You are Gaben. You must delay the launch of Half-Life 3 at all costs.
+                spriteBatch.DrawString(Art.Font, @"You are Gaben. You must delay the launch of Half-Life 3 at all costs.
 Manage your employees by giving them other things to work on.
-hello", new Vector2(20, 20), Color.Black);
+Unfortunately, Valve is growing so fast that another employee joins every 30 seconds.
+Good luck.
 
-            spriteBatch.End();
+Press enter to start.", new Vector2(20, 20), Color.Black);
+
+                spriteBatch.End();
+            }
+            else
+            {
+                
+
+                spriteBatch.Begin();
+
+                spriteBatch.DrawString(Art.Font, "Half-Life 3 is " + TaskManager.HalfLife3.PercentComplete + "% complete.", new Vector2(20, 20), Color.Black);
+
+                EmployeeManager.DrawEmployees(spriteBatch);
+
+                spriteBatch.End();
+            }
 
             // TODO: Add your drawing code here
 
             base.Draw(gameTime);
-        }
+        }        
     }
 }

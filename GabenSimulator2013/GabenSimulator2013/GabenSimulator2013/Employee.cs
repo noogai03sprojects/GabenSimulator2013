@@ -7,17 +7,37 @@ namespace GabenSimulator2013
 {
     class Employee
     {
-        Task CurrentTask;
+        public Task CurrentTask;
 
-        int WorkPerDay;
+        public int WorkPerSecond;
+        public int Multiplier = 1;
 
-        string Name;
+        public string Name;
 
-        public Employee(int wpd, string name)
+        public int Age = 1;
+
+        public Employee(int wps, string name, Task task = null)
         {
-            WorkPerDay = wpd;
+            WorkPerSecond = wps;
             Name = name;
-            CurrentTask = Task.None;
+
+            CurrentTask = TaskManager.HalfLife3;
+        }
+
+        public void SetTask(Task task)
+        {
+            CurrentTask = task;
+            task.AddWorker(this);
+        }
+
+        public void Work()
+        {
+            CurrentTask.AddWork(this);
+            Age++;
+            if (Age % 100 == 0)
+            {
+                Multiplier++;
+            }
         }
     }
 }
