@@ -18,19 +18,29 @@ namespace GabenSimulator2013
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        enum GameState
+        {
+            Intro,
+            Gameplay,
+            GameOver
+        }
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;        
 
         TaskManager TaskManager;
         EmployeeManager EmployeeManager;
-        TimingManager TimingManager;        
+        TimingManager TimingManager;
 
-        bool isIntro = true;
+        GameState State = GameState.Intro;
 
         Random random = new Random();
 
+        public static Game1 Instance;
+
         public Game1()
         {
+            Instance = this;
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
@@ -51,10 +61,14 @@ namespace GabenSimulator2013
             TimingManager = new TimingManager();
             TaskManager = new TaskManager();
             EmployeeManager = new EmployeeManager();
+            TaskManager.EmployeeManager = EmployeeManager;
+            EmployeeManager.TaskManager = TaskManager;
 
             TimingManager.Second += UpdateManagers;
             TimingManager.NewEmployee += NewEmployee;
             TimingManager.StartTimers();
+
+            NameGenerator.SetNicknameMode(NameGenerator.NicknameMode.Always);
 
             //TimingManager.UpdateTimer_Elapsed
             EmployeeManager.AddEmployee();
@@ -106,7 +120,10 @@ namespace GabenSimulator2013
 
             KeyboardState state = Keyboard.GetState();
             if (state.IsKeyDown(Keys.Enter))
-                isIntro = false;
+                State = GameState.Gameplay;
+
+            EmployeeManager.Update();
+            TaskManager.Update();
 
             // TODO: Add your update logic here
 
@@ -117,21 +134,22 @@ namespace GabenSimulator2013
 
         public void GameOver()
         {
-
+            State = GameState.GameOver;
         }
 
         public void UpdateManagers()
         {
-            if (!isIntro)
+            if (State == GameState.Gameplay)
             {
-                EmployeeManager.Update();
-                TaskManager.Update();
+                EmployeeManager.Tick();
+                TaskManager.Tick();
             }
+            Console.WriteLine(NameGenerator.GetName());
         }
 
         public void NewEmployee()
         {
-            if (!isIntro)
+            if (State == GameState.Gameplay)
                 EmployeeManager.AddEmployee();
         }
 
@@ -142,7 +160,7 @@ namespace GabenSimulator2013
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            if (isIntro)
+            if (State == GameState.Intro)
             {
                 
 
@@ -157,7 +175,7 @@ Press enter to start.", new Vector2(20, 20), Color.Black);
 
                 spriteBatch.End();
             }
-            else
+            else if (State == GameState.Gameplay)
             {
                 
 
@@ -166,6 +184,17 @@ Press enter to start.", new Vector2(20, 20), Color.Black);
                 spriteBatch.DrawString(Art.Font, "Half-Life 3 is " + TaskManager.HalfLife3.PercentComplete + "% complete.", new Vector2(20, 20), Color.Black);
 
                 EmployeeManager.DrawEmployees(spriteBatch);
+                TaskManager.DrawTasks(spriteBatch);
+
+                spriteBatch.End();
+            }
+            else if (State == GameState.GameOver)
+            {
+                spriteBatch.Begin();
+
+                spriteBatch.DrawString(Art.Font, @"GAME OVER
+Half-Life 3 is released! Disaster!
+You procrastinated for " + TimingManager.GameOver() + " seconds.", new Vector2(20, 20), Color.Black);
 
                 spriteBatch.End();
             }

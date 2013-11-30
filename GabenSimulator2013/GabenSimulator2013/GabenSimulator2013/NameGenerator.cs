@@ -8,11 +8,21 @@ namespace GabenSimulator2013
 {
     static class NameGenerator
     {
+        public enum NicknameMode
+        {
+            Always,
+            Never,
+            Sometimes,
+            Half
+        }
+
         static List<string> FirstNames;
         static List<string> Nicknames;
         static List<string> Surnames;
 
         static Random random = new Random();
+
+        static NicknameMode _NicknameMode;
 
         static NameGenerator()
         {
@@ -21,6 +31,11 @@ namespace GabenSimulator2013
             Surnames = new List<string>();
 
             LoadNames();
+        }
+
+        public static void SetNicknameMode(NicknameMode mode)
+        {
+            _NicknameMode = mode;
         }
 
         private static void LoadNames()
@@ -54,10 +69,41 @@ namespace GabenSimulator2013
         public static string GetName()
         {            
             string first = FirstNames[random.Next(FirstNames.Count)];
-            string nick = Nicknames[random.Next(Nicknames.Count)];
-            string last = Surnames[random.Next(Surnames.Count)];
 
-            return first + " \"" + nick + "\" " + last;
+            string nick = Nicknames[random.Next(Nicknames.Count)];
+            if (nick.Contains("[FIRST]"))
+            {
+                string[] splits =  nick.Split('[', ']');
+                splits[1] = first;
+                nick = string.Join("", splits);                
+            }
+
+            string last = Surnames[random.Next(Surnames.Count)];
+            
+            switch (_NicknameMode)
+            {
+                case NicknameMode.Always:
+                    return first + " \"" + nick + "\" " + last;
+                    
+                case NicknameMode.Never:
+                    return first + " " + last;
+                    
+                case NicknameMode.Sometimes:
+                    if (random.NextDouble() > 0.8f)
+                        return first + " \"" + nick + "\" " + last;
+                    else
+                        return first + " " + last;
+                    
+                case NicknameMode.Half:
+                    if (random.NextDouble() > 0.5f)
+                        return first + " \"" + nick + "\" " + last;
+                    else
+                        return first + " " + last;
+                default:
+                    return first + " \"" + nick + "\" " + last;
+                    
+            }   
+            
         }
     }
 }

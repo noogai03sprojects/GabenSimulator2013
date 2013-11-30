@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Timers;
+using System.Diagnostics;
 
 namespace GabenSimulator2013
 {
@@ -19,12 +20,15 @@ namespace GabenSimulator2013
 
         private Timer UpdateTimer;
         private Timer EmployeeTimer;
+
+        private Stopwatch ScoreStopwatch;
         //public ElapsedEventHandler UpdateTimer_Elapsed;
 
         public TimingManager()
         {
             UpdateTimer = new Timer(1000); //1 second            
             EmployeeTimer = new Timer(3000); // 30 seconds
+            ScoreStopwatch = Stopwatch.StartNew();
 
             UpdateTimer.Elapsed += Update;
             EmployeeTimer.Elapsed += EmployeeUpdate;
@@ -52,6 +56,15 @@ namespace GabenSimulator2013
         {
             if (NewEmployee != null)
                 NewEmployee();
+        }
+
+        public float GameOver()
+        {
+            UpdateTimer.Stop();
+            EmployeeTimer.Stop();
+            ScoreStopwatch.Stop();
+
+            return ScoreStopwatch.Elapsed.Seconds;
         }
     }
 }

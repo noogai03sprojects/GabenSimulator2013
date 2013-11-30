@@ -26,12 +26,19 @@ namespace GabenSimulator2013
         public static event MouseClickDelegate LeftClick;
         public static event MouseClickDelegate RightClick;
 
+        private static bool bFrameOutput = false;
+
         static Input()
         {
             oldGamePadStates = new GamePadState[MaxInputs];
             newGamePadStates = new GamePadState[MaxInputs];
             //oldKeyboardState = new KeyboardState[MaxInputs];
             //newKeyboardState = new KeyboardState[MaxInputs];
+        }
+
+        public static void Delay1Frame()
+        {
+            bFrameOutput = false;
         }
 
         public static void Update()
@@ -71,28 +78,29 @@ namespace GabenSimulator2013
                     );
             }
             //oldMouseState.
+            bFrameOutput = true;
         }
 
         public static bool IsKeyDown(Keys key)
         {
-            return newKeyboardState.IsKeyDown(key);
+            return newKeyboardState.IsKeyDown(key) && bFrameOutput;
         }
 
         public static bool IsKeyPressed(Keys key)
         {
-            return oldKeyboardState.IsKeyUp(key) && newKeyboardState.IsKeyDown(key);
+            return oldKeyboardState.IsKeyUp(key) && newKeyboardState.IsKeyDown(key) && bFrameOutput;
         }
 
         public static bool IsButtonDown(Buttons button, PlayerIndex index)
         {
             int i = (int)index;
-            return newGamePadStates[i].IsButtonDown(button);
+            return newGamePadStates[i].IsButtonDown(button) && bFrameOutput;
         }
 
         public static bool IsButtonPressed(Buttons button, PlayerIndex index)
         {
             int i = (int)index;
-            return oldGamePadStates[i].IsButtonUp(button) && newGamePadStates[i].IsButtonDown(button);
+            return oldGamePadStates[i].IsButtonUp(button) && newGamePadStates[i].IsButtonDown(button) && bFrameOutput;
         }
 
         public static Vector2 GetLeftStick(PlayerIndex index)
@@ -127,7 +135,7 @@ namespace GabenSimulator2013
         }
         public static bool IsLeftClicked()
         {
-            return (newMouseState.LeftButton == ButtonState.Pressed) && (oldMouseState.LeftButton == ButtonState.Released);
+            return (newMouseState.LeftButton == ButtonState.Pressed) && (oldMouseState.LeftButton == ButtonState.Released) && bFrameOutput;
         }
         public static bool IsRightDown()
         {
@@ -135,7 +143,7 @@ namespace GabenSimulator2013
         }
         public static bool IsRightClicked()
         {
-            return (newMouseState.RightButton == ButtonState.Pressed) && (oldMouseState.RightButton == ButtonState.Released);
+            return (newMouseState.RightButton == ButtonState.Pressed) && (oldMouseState.RightButton == ButtonState.Released) && bFrameOutput;
         }
 
         public static int MouseWheelValue

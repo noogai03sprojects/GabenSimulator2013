@@ -12,6 +12,8 @@ namespace GabenSimulator2013
         List<Employee> CurrentWorkers;
         public string Name;
         public bool IsFinished { get { return (CurrentWork >= RequiredWork); } }
+
+        public TaskManager Manager;
         public float PercentComplete
         {
             get
@@ -26,18 +28,20 @@ namespace GabenSimulator2013
             CurrentWorkers = new List<Employee>();
         }
 
-        public Task(int requiredWork, string name)
+        public Task(int requiredWork, string name, TaskManager manager)
             : this()
         {
             RequiredWork = requiredWork;
             Name = name;
             CurrentWork = 0;
+            Manager = manager;
         }
 
         public void AddWorker(Employee emp)
         {
-            emp.SetTask(this);
-            CurrentWorkers.Add(emp);
+            //emp.SetTask(this);
+            if (!Manager.bUpdating)
+                CurrentWorkers.Add(emp);
         }
 
         public void AddWork(Employee sender)
@@ -54,7 +58,7 @@ namespace GabenSimulator2013
                 i--;
             }
         }
-        public static Task None = new Task(-1, "No Task");
+        
 
     }
 }
