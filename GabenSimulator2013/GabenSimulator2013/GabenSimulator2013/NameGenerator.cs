@@ -79,30 +79,46 @@ namespace GabenSimulator2013
             }
 
             string last = Surnames[random.Next(Surnames.Count)];
-            
+
+            string final;
+
             switch (_NicknameMode)
             {
                 case NicknameMode.Always:
-                    return first + " \"" + nick + "\" " + last;
+                    final =  first + " \"" + nick + "\" " + last;
+                    break;
                     
                 case NicknameMode.Never:
-                    return first + " " + last;
-                    
+                    final = first + " " + last;
+                    break;
+
                 case NicknameMode.Sometimes:
                     if (random.NextDouble() > 0.8f)
-                        return first + " \"" + nick + "\" " + last;
+                        final = first + " \"" + nick + "\" " + last;
                     else
-                        return first + " " + last;
+                        final = first + " " + last;
+                    break;
                     
                 case NicknameMode.Half:
                     if (random.NextDouble() > 0.5f)
-                        return first + " \"" + nick + "\" " + last;
+                        final = first + " \"" + nick + "\" " + last;
                     else
-                        return first + " " + last;
+                        final = first + " " + last;
+                    break;
+
                 default:
-                    return first + " \"" + nick + "\" " + last;
+                    final = first +" \"" + nick + "\" " + last;
+                    break;
                     
-            }   
+            }
+            if (final.Length > 25)
+            {
+                string[] splits = final.Split(' ');
+                int splitpoint = splits.Length / 2;
+                splits[splitpoint] = splits[splitpoint].Insert(0, "\n");
+                final = string.Join(" ", splits);
+            }
+            return final;
             
         }
     }

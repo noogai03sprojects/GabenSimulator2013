@@ -18,7 +18,7 @@ namespace GabenSimulator2013
         {
             get
             {
-                float result = ((float)CurrentWork / (float)RequiredWork);                
+                float result = ((float)CurrentWork / (float)RequiredWork) * 100;                
                 return result;
             }
         }
@@ -53,7 +53,8 @@ namespace GabenSimulator2013
         {
             for (int i = 0; i < CurrentWorkers.Count; i++)
             {
-                CurrentWorkers[i].CurrentTask = TaskManager.HalfLife3;
+                //CurrentWorkers[i].CurrentTask = TaskManager.HalfLife3;
+                CurrentWorkers[i].Finish();
                 CurrentWorkers.RemoveAt(i);
                 i--;
             }

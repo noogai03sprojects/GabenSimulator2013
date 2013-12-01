@@ -27,7 +27,7 @@ namespace GabenSimulator2013
         public TimingManager()
         {
             UpdateTimer = new Timer(1000); //1 second            
-            EmployeeTimer = new Timer(3000); // 30 seconds
+            EmployeeTimer = new Timer(30000); // 30 seconds
             ScoreStopwatch = Stopwatch.StartNew();
 
             UpdateTimer.Elapsed += Update;

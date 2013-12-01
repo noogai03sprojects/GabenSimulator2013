@@ -89,7 +89,7 @@ namespace GabenSimulator2013
 
         public void AddTask()
         {
-            int requiredWork = (int)random.NextFloat(500, 2000);
+            int requiredWork = (int)random.NextFloat(1000, 2000);
             if (!bAreGameNamesExhausted)
             {
                 GameName name = new GameName();
@@ -136,27 +136,35 @@ namespace GabenSimulator2013
                 delayTimer--;
             if (Input.IsKeyPressed(Keys.Down))
             {
-                if (SelectedIndex < Tasks.Count - 1)
+                if (SelectedIndex < Tasks.Count - 1 && bSelecting)
                     SelectedIndex++;
             }
             if (Input.IsKeyPressed(Keys.Up))
             {
-                if (SelectedIndex > -1)
+                if (SelectedIndex > -1 && bSelecting)
                     SelectedIndex--;
             }
             if (Input.IsKeyPressed(Keys.Enter))
             {
                 if (bSelecting && delayTimer <= 0 && !bUpdating)
                 {
-                    if (SelectedIndex == -1)
+                    if (SelectedIndex < 0)
                     {
                         AddTask();
                         return;
                     }
-                    SelectedEmployee.SetTask(Tasks[SelectedIndex]);
-                    bSelecting = false;
-                    SelectedEmployee = null;
-                    EmployeeManager.FinishSelecting();
+                    else
+                    {
+                        if (Tasks.Count <= 0)
+                        {
+                            SelectedIndex = -1;
+                            return;
+                        }
+                        SelectedEmployee.SetTask(Tasks[SelectedIndex]);
+                        bSelecting = false;
+                        SelectedEmployee = null;
+                        EmployeeManager.FinishSelecting();
+                    }
                 }
             }
         }
@@ -203,7 +211,7 @@ namespace GabenSimulator2013
 
                 float YOffset = Art.Font.LineSpacing * i;
 
-                string text = "Name: " + task.Name + " Percent Complete: " + task.PercentComplete;
+                string text = "Name: " + task.Name + " Percent Complete: " + task.PercentComplete + "%";
                 Vector2 size = Art.Font.MeasureString(text);                
 
                 if (i == SelectedIndex)

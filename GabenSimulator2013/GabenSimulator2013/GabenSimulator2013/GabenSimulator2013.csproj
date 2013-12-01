@@ -114,6 +114,7 @@
     <Compile Include="Employee.cs" />
     <Compile Include="EmployeeManager.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Hypeometer.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="NameGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

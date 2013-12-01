@@ -36,7 +36,11 @@ namespace GabenSimulator2013
 
         Random random = new Random();
 
+        Hypeometer Hypeometer;
+
         public static Game1 Instance;
+
+        public Vector2 ScreenSize;
 
         public Game1()
         {
@@ -57,6 +61,7 @@ namespace GabenSimulator2013
             graphics.PreferredBackBufferWidth = 1000;
             graphics.PreferredBackBufferHeight = 600;
             graphics.ApplyChanges();
+            ScreenSize = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
 
             TimingManager = new TimingManager();
             TaskManager = new TaskManager();
@@ -68,10 +73,12 @@ namespace GabenSimulator2013
             TimingManager.NewEmployee += NewEmployee;
             TimingManager.StartTimers();
 
-            NameGenerator.SetNicknameMode(NameGenerator.NicknameMode.Always);
+            NameGenerator.SetNicknameMode(NameGenerator.NicknameMode.Half);
 
             //TimingManager.UpdateTimer_Elapsed
             EmployeeManager.AddEmployee();
+
+            Hypeometer = new Hypeometer(TaskManager, (int)ScreenSize.X - 40, 100, 40, 500, 1000);
 
             base.Initialize();
         }
@@ -122,8 +129,12 @@ namespace GabenSimulator2013
             if (state.IsKeyDown(Keys.Enter))
                 State = GameState.Gameplay;
 
-            EmployeeManager.Update();
-            TaskManager.Update();
+            if (State == GameState.Gameplay)
+            {
+                EmployeeManager.Update();
+                TaskManager.Update();
+                Hypeometer.Update();
+            }
 
             // TODO: Add your update logic here
 
@@ -143,8 +154,9 @@ namespace GabenSimulator2013
             {
                 EmployeeManager.Tick();
                 TaskManager.Tick();
+                Hypeometer.Tick();
             }
-            Console.WriteLine(NameGenerator.GetName());
+            //Console.WriteLine(NameGenerator.GetName());
         }
 
         public void NewEmployee()
@@ -166,10 +178,18 @@ namespace GabenSimulator2013
 
                 spriteBatch.Begin();
 
-                spriteBatch.DrawString(Art.Font, @"You are Gaben. You must delay the launch of Half-Life 3 at all costs.
-Manage your employees by giving them other things to work on.
-Unfortunately, Valve is growing so fast that another employee joins every 30 seconds.
-Good luck.
+                spriteBatch.DrawString(Art.Font, @"Mr Newell! I have a task for you!
+You must delay the launch of Half-Life 3 at all costs.
+
+You will do this by managing your employees. Give them other things to work on. Anything, but not Half-Life 3!
+Unfortunately, Valve is growing so fast that another employee will join every 30 seconds.
+
+However, the bright light of indie development is your friend: when an employee has completed more than 3 projects,
+he/she will abandon the mighty battleship that is Valve Software and proceed to try their luck in a rowing boat
+which they constructed themself out of spare parts. They will then proceed to try and either make a Cave Story clone
+or Minecraft 2.
+
+Good luck, Mr Newell. You'll need it.
 
 Press enter to start.", new Vector2(20, 20), Color.Black);
 
@@ -177,14 +197,17 @@ Press enter to start.", new Vector2(20, 20), Color.Black);
             }
             else if (State == GameState.Gameplay)
             {
-                
+                Vector2 size = Art.Font.MeasureString("Half-Life 3 is " + TaskManager.HalfLife3.PercentComplete + "% complete.");
+                Rectangle HL3 = new Rectangle(20, 20, (int)size.X, (int)size.Y);
 
-                spriteBatch.Begin();
-
-                spriteBatch.DrawString(Art.Font, "Half-Life 3 is " + TaskManager.HalfLife3.PercentComplete + "% complete.", new Vector2(20, 20), Color.Black);
+                spriteBatch.Begin();               
 
                 EmployeeManager.DrawEmployees(spriteBatch);
                 TaskManager.DrawTasks(spriteBatch);
+                Hypeometer.Draw(spriteBatch);
+
+                spriteBatch.Draw(Art.Pixel, HL3, Color.ForestGreen);
+                spriteBatch.DrawString(Art.Font, "Half-Life 3 is " + TaskManager.HalfLife3.PercentComplete + "% complete.", new Vector2(20, 20), Color.Black);
 
                 spriteBatch.End();
             }

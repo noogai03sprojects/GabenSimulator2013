@@ -16,6 +16,8 @@ namespace GabenSimulator2013
 
         public int Age = 1;
 
+        public int CompletedProjects = 0;
+
         public Employee(int wps, string name, Task task = null)
         {
             WorkPerSecond = wps;
@@ -38,6 +40,12 @@ namespace GabenSimulator2013
             {
                 Multiplier++;
             }
+        }
+
+        public void Finish()
+        {
+            CurrentTask = TaskManager.HalfLife3;
+            CompletedProjects++;
         }
     }
 }
