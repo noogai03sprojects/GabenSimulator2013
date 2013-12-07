@@ -118,6 +118,7 @@ namespace GabenSimulator2013
                 name.Used = true;
                 GameNames[i] = name;                
                 Tasks.Add(new Task(requiredWork, name.Name, this));
+                Hypeometer.Instance.AddHype(requiredWork);
             }
             else
             {

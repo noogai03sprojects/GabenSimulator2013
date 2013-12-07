@@ -42,6 +42,8 @@ namespace GabenSimulator2013
 
         public Vector2 ScreenSize;
 
+        public Color Background = Color.White;
+
         public Game1()
         {
             Instance = this;
@@ -78,7 +80,8 @@ namespace GabenSimulator2013
             //TimingManager.UpdateTimer_Elapsed
             EmployeeManager.AddEmployee();
 
-            Hypeometer = new Hypeometer(TaskManager, (int)ScreenSize.X - 40, 100, 40, 500, 1000);
+            Hypeometer = new Hypeometer(TaskManager, (int)ScreenSize.X - 40, 100, 40, 500, 10000);
+            Hypeometer.AddEvent(new Hypeometer.HypeEvent("Shit", "Shit hits the fan", 3000, TestHypeEvent));
 
             base.Initialize();
         }
@@ -165,13 +168,18 @@ namespace GabenSimulator2013
                 EmployeeManager.AddEmployee();
         }
 
+        public void TestHypeEvent()
+        {
+            Background = Color.Red;
+        }
+
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Background);
             if (State == GameState.Intro)
             {
                 
@@ -182,7 +190,7 @@ namespace GabenSimulator2013
 You must delay the launch of Half-Life 3 at all costs.
 
 You will do this by managing your employees. Give them other things to work on. Anything, but not Half-Life 3!
-Unfortunately, Valve is growing so fast that another employee will join every 30 seconds.
+Unfortunately, Valve is buying entire student dev teams so fast that another employee will join every 30 seconds.
 
 However, the bright light of indie development is your friend: when an employee has completed more than 3 projects,
 he/she will abandon the mighty battleship that is Valve Software and proceed to try their luck in a rowing boat
