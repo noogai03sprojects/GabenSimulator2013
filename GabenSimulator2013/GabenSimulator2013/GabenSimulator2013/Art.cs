@@ -21,7 +21,7 @@ namespace GabenSimulator2013
         {
             Font = Content.Load<SpriteFont>("Font");
 
-            Pixel = new Texture2D(Game1.Instance.GraphicsDevice, 1, 1);
+            Pixel = new Texture2D(GameRoot.Instance.GraphicsDevice, 1, 1);
             Color[] data = new Color[1];
             data[0] = Color.White;
             Pixel.SetData<Color>(data);

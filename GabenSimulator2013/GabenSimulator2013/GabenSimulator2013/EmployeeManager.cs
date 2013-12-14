@@ -74,7 +74,7 @@ namespace GabenSimulator2013
             {
                 if (SelectedIndex < Employees.Count - 1)
                     SelectedIndex++;
-                if (SelectorHeight > Game1.Instance.ScreenSize.Y - Art.Font.LineSpacing * 4)
+                if (SelectorHeight > GameRoot.Instance.ScreenSize.Y - Art.Font.LineSpacing * 4)
                 {
                     DesiredScrollOffset -= Art.Font.LineSpacing * 2;
                 }

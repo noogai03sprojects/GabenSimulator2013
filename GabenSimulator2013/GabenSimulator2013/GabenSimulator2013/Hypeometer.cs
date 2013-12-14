@@ -94,6 +94,10 @@ namespace GabenSimulator2013
         {
             Hype += hype;
         }
+        public void RemoveHype(int hype)
+        {
+            Hype -= hype;
+        }
 
         public void AddEvent(HypeEvent _event)
         {

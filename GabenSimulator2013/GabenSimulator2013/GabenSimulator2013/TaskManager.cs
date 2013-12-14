@@ -45,6 +45,10 @@ namespace GabenSimulator2013
         Rectangle FrameArea = new Rectangle(0, 0, 400, 30);
         Rectangle BorderArea = new Rectangle(0, 60, 402, 32);
 
+        float ScrollOffset = 0;
+        float DesiredScrollOffset = 0;
+        float SelectorTop, SelectorBottom = 0;
+
         public struct GameName
         {
             public string Name;
@@ -101,7 +105,7 @@ namespace GabenSimulator2013
 
         public void AddTask()
         {
-            if (TaskCount < MaxTasks)
+            //if (TaskCount < MaxTasks)
             {
                 int requiredWork = (int)random.NextFloat(1000, 2000);
                 if (!bAreGameNamesExhausted)
@@ -132,7 +136,7 @@ namespace GabenSimulator2013
                     name.Used = true;
                     GameNames[i] = name;
                     Tasks.Add(new Task(requiredWork, name.Name, this));
-                    Hypeometer.Instance.AddHype(requiredWork);
+                    //Hypeometer.Instance.AddHype(requiredWork);
                 }
                 else
                 {
@@ -155,12 +159,22 @@ namespace GabenSimulator2013
             {
                 if (SelectedIndex < Tasks.Count - 1 && bSelecting)
                     SelectedIndex++;
+                if (SelectorBottom + BaseDrawPosition.Y > GameRoot.Instance.ScreenSize.Y)
+                {
+                    DesiredScrollOffset -= 30;
+                }                
                 Console.WriteLine(SelectedIndex);
             }
             if (Input.IsKeyPressed(Keys.Up))
             {
                 if (SelectedIndex > -1 && bSelecting)
+                {
                     SelectedIndex--;
+                    if (SelectorTop + BaseDrawPosition.Y < BaseDrawPosition.Y)
+                    {
+                        DesiredScrollOffset += 30;
+                    }
+                }
                 Console.WriteLine(SelectedIndex);
             }
             if (Input.IsKeyPressed(Keys.Enter))
@@ -205,6 +219,8 @@ namespace GabenSimulator2013
                 else
                     AddTaskRectangle.Y = 80;
             }
+
+            ScrollOffset = MathHelper.Lerp(ScrollOffset, DesiredScrollOffset, 0.15f);
         }
 
         public void Tick()
@@ -261,7 +277,7 @@ namespace GabenSimulator2013
             {
                 Task task = Tasks[i];
 
-                float YOffset = LastY;
+                float YOffset = LastY + ScrollOffset;
                 //if (LastY != 0)
                     //YOffset = LastY + Art.Font.LineSpacing;                
 
@@ -273,8 +289,13 @@ namespace GabenSimulator2013
                 completion.Y = (int)(BaseDrawPosition.Y +YOffset);
 
                 Color toDraw = Color.White;
-                if (bSelecting && i == SelectedIndex)
-                    toDraw = Color.Yellow;
+                if (i == SelectedIndex)
+                {
+                    if (bSelecting)
+                        toDraw = Color.Yellow;
+                    SelectorTop = YOffset;
+                    SelectorBottom = YOffset + 30;
+                }
                 spriteBatch.Draw(Art.TaskFrame, BaseDrawPosition + new Vector2(1, YOffset), RoundRectArea, toDraw);
                 spriteBatch.Draw(Art.Pixel, completion, Color.ForestGreen);
                 spriteBatch.Draw(Art.TaskFrame, BaseDrawPosition + new Vector2(1, YOffset), FrameArea, BaseColour);
@@ -283,7 +304,10 @@ namespace GabenSimulator2013
                 spriteBatch.DrawString(Art.Font, text, BaseDrawPosition + new Vector2(2, YOffset + 5), Color.Black);
                 LastY += Art.Font.LineSpacing + 11;
             }
-            LastY = 1;            
+            LastY = 1;
+            spriteBatch.Draw(Art.Pixel, new Rectangle((int)BaseDrawPosition.X, 0, BaseArea.Width, 85), Color.White);
+            spriteBatch.Draw(Art.AddTask, new Vector2(400, 40), AddTaskRectangle, Color.White);
+            spriteBatch.DrawString(Art.Font, TaskCount + " of " + MaxTasks + " tasks currently running", new Vector2(BaseDrawPosition.X, 20), Color.Black);
         }
     }
 }

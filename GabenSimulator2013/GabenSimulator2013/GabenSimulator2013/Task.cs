@@ -13,6 +13,8 @@ namespace GabenSimulator2013
         public string Name;
         public bool IsFinished { get { return (CurrentWork >= RequiredWork); } }
 
+        int hypeStage = 0;
+
         public TaskManager Manager;
         public float PercentComplete
         {
@@ -54,6 +56,16 @@ namespace GabenSimulator2013
         public void AddWork(Employee sender)
         {
             CurrentWork += sender.WorkPerSecond;
+            if (PercentComplete > 50 && hypeStage == 0)
+            {
+                Hypeometer.Instance.AddHype(RequiredWork / 2);
+                hypeStage = 1;
+            }
+            else if (PercentComplete > 90 && hypeStage == 1)
+            {
+                Hypeometer.Instance.AddHype(RequiredWork / 2);
+                hypeStage = 2;
+            }
         }
 
         public void Finish()
@@ -65,6 +77,7 @@ namespace GabenSimulator2013
                 CurrentWorkers.RemoveAt(i);
                 i--;
             }
+            Hypeometer.Instance.RemoveHype(RequiredWork);
         }
         
 

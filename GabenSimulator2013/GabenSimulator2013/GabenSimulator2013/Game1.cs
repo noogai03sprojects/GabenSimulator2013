@@ -16,7 +16,7 @@ namespace GabenSimulator2013
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class GameRoot : Microsoft.Xna.Framework.Game
     {
         enum GameState
         {
@@ -38,13 +38,13 @@ namespace GabenSimulator2013
 
         Hypeometer Hypeometer;
 
-        public static Game1 Instance;
+        public static GameRoot Instance;
 
         public Vector2 ScreenSize;
 
         public Color Background = Color.White;
 
-        public Game1()
+        public GameRoot()
         {
             Instance = this;
             graphics = new GraphicsDeviceManager(this);
