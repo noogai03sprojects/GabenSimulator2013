@@ -14,6 +14,9 @@ namespace GabenSimulator2013
 
         public static Texture2D Pixel;
 
+        public static Texture2D AddTask;
+        public static Texture2D TaskFrame;
+
         public static void LoadContent(ContentManager Content)
         {
             Font = Content.Load<SpriteFont>("Font");
@@ -22,6 +25,10 @@ namespace GabenSimulator2013
             Color[] data = new Color[1];
             data[0] = Color.White;
             Pixel.SetData<Color>(data);
+
+            AddTask = Content.Load<Texture2D>("AddNewTask");
+            TaskFrame = Content.Load<Texture2D>("frame");
+            Console.WriteLine(Art.Font.LineSpacing);
         }
     }
 }

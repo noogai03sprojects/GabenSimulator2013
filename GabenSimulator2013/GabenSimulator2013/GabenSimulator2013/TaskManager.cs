@@ -17,6 +17,8 @@ namespace GabenSimulator2013
         public static Task None;
 
         public List<Task> Tasks;
+        public int MaxTasks;
+        public int TaskCount;
 
         public List<GameName> GameNames;
         bool bAreGameNamesExhausted = false;
@@ -28,12 +30,20 @@ namespace GabenSimulator2013
         private int SelectedIndex = -1;
         private bool bSelecting = false;
 
-        Vector2 BaseDrawPosition = new Vector2(400, 50);
+        
+        Rectangle BaseArea = new Rectangle(400, 85, 402, 500);
+        Vector2 BaseDrawPosition = new Vector2();
+        Color BaseColour = new Color(83, 83, 83);
 
         Employee SelectedEmployee = null;
 
         int delayTimer = 5;
         public bool bUpdating = false;
+
+        Rectangle AddTaskRectangle = new Rectangle(0, 40, 150, 40);
+        Rectangle RoundRectArea = new Rectangle(0, 30, 400, 30);
+        Rectangle FrameArea = new Rectangle(0, 0, 400, 30);
+        Rectangle BorderArea = new Rectangle(0, 60, 402, 32);
 
         public struct GameName
         {
@@ -65,6 +75,8 @@ namespace GabenSimulator2013
             NumericalGameNames = new List<NumericalGameName>();
             ExhaustedNames = new List<GameName>();
             LoadNames();
+            MaxTasks = 3;
+            BaseDrawPosition = new Vector2(BaseArea.Left, BaseArea.Top);
         }
 
         public void LoadNames()
@@ -89,45 +101,49 @@ namespace GabenSimulator2013
 
         public void AddTask()
         {
-            int requiredWork = (int)random.NextFloat(1000, 2000);
-            if (!bAreGameNamesExhausted)
+            if (TaskCount < MaxTasks)
             {
-                GameName name = new GameName();
-                
-                //do 
-                int i;
-                do
+                int requiredWork = (int)random.NextFloat(1000, 2000);
+                if (!bAreGameNamesExhausted)
                 {
-                    i = random.Next(GameNames.Count);
-                    name = GameNames[i];
-                    if (name.Used)
-                    {
-                        //if (ExhaustedNames.Contains(name))
-                            ExhaustedNames.Add(name);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                } while (true);
-                //if (name.Used)
-                    
-                if (ExhaustedNames.Count >= GameNames.Count)
-                    bAreGameNamesExhausted = true;
+                    GameName name = new GameName();
 
-                name.Used = true;
-                GameNames[i] = name;                
-                Tasks.Add(new Task(requiredWork, name.Name, this));
-                Hypeometer.Instance.AddHype(requiredWork);
-            }
-            else
-            {
-                int i = random.Next(NumericalGameNames.Count);
-                NumericalGameName name = NumericalGameNames[i];
-                
-                Tasks.Add(new Task(requiredWork, name.Name + " " + name.Number, this));
-                name.Number++;
-                NumericalGameNames[i] = name;
+                    //do 
+                    int i;
+                    do
+                    {
+                        i = random.Next(GameNames.Count);
+                        name = GameNames[i];
+                        if (name.Used)
+                        {
+                            //if (ExhaustedNames.Contains(name))
+                            ExhaustedNames.Add(name);
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    } while (true);
+                    //if (name.Used)
+
+                    if (ExhaustedNames.Count >= GameNames.Count)
+                        bAreGameNamesExhausted = true;
+
+                    name.Used = true;
+                    GameNames[i] = name;
+                    Tasks.Add(new Task(requiredWork, name.Name, this));
+                    Hypeometer.Instance.AddHype(requiredWork);
+                }
+                else
+                {
+                    int i = random.Next(NumericalGameNames.Count);
+                    NumericalGameName name = NumericalGameNames[i];
+
+                    Tasks.Add(new Task(requiredWork, name.Name + " " + name.Number, this));
+                    name.Number++;
+                    NumericalGameNames[i] = name;
+                }
+                TaskCount++;
             }
         }
 
@@ -139,11 +155,13 @@ namespace GabenSimulator2013
             {
                 if (SelectedIndex < Tasks.Count - 1 && bSelecting)
                     SelectedIndex++;
+                Console.WriteLine(SelectedIndex);
             }
             if (Input.IsKeyPressed(Keys.Up))
             {
                 if (SelectedIndex > -1 && bSelecting)
                     SelectedIndex--;
+                Console.WriteLine(SelectedIndex);
             }
             if (Input.IsKeyPressed(Keys.Enter))
             {
@@ -161,12 +179,31 @@ namespace GabenSimulator2013
                             SelectedIndex = -1;
                             return;
                         }
-                        SelectedEmployee.SetTask(Tasks[SelectedIndex]);
+                        if (SelectedIndex < Tasks.Count)
+                            SelectedEmployee.SetTask(Tasks[SelectedIndex]);
                         bSelecting = false;
                         SelectedEmployee = null;
                         EmployeeManager.FinishSelecting();
                     }
                 }
+            }
+
+            if (SelectedIndex == -1)
+            {
+                if (bSelecting)
+                {
+                    if (TaskCount < MaxTasks)
+                        AddTaskRectangle.Y = 0;
+                    else
+                        AddTaskRectangle.Y = 120;
+                }                
+            }
+            else
+            {
+                if (TaskCount < MaxTasks)
+                    AddTaskRectangle.Y = 40;
+                else
+                    AddTaskRectangle.Y = 80;
             }
         }
 
@@ -178,6 +215,7 @@ namespace GabenSimulator2013
                 if (task.IsFinished)
                 {
                     task.Finish();
+                    TaskCount--;
                     //Tasks.Remove(task);
                 }
             }
@@ -194,36 +232,58 @@ namespace GabenSimulator2013
             delayTimer = 5;
         }
 
+        public void DrawDivider(SpriteBatch spriteBatch, int yOffset)
+        {
+            spriteBatch.Draw(Art.Pixel, new Rectangle(BaseArea.X, yOffset, BaseArea.Width, 1), Color.Black);
+        }
+
+        public void DrawTask(SpriteBatch spriteBatch, Task task)
+        {
+
+        }
+
+        float LastY = 0;
+
+        public Rectangle CalcCompletionRect(Task task)
+        {
+            Rectangle rectangle = new Rectangle();
+            rectangle.Height = 30;
+            rectangle.Width = (int)(task.DecimalComplete * BaseArea.Width);
+            return rectangle;
+        }
+
         public void DrawTasks(SpriteBatch spriteBatch)
         {
-            if (SelectedIndex == -1)
-            {
-                if (bSelecting)
-                {
-                    Vector2 size = Art.Font.MeasureString("Add new task");
-                    Rectangle rect = new Rectangle((int)BaseDrawPosition.X, (int)(BaseDrawPosition.Y - Art.Font.LineSpacing), (int)size.X, (int)size.Y);
-                    spriteBatch.Draw(Art.Pixel, rect, Color.Yellow);
-                }
-            }
-            spriteBatch.DrawString(Art.Font, "Add new task", BaseDrawPosition + new Vector2(0, -Art.Font.LineSpacing), Color.Black);
+            spriteBatch.Draw(Art.Pixel, BaseArea, BaseColour);
+            spriteBatch.Draw(Art.AddTask, new Vector2(400, 40), AddTaskRectangle, Color.White);
+            spriteBatch.DrawString(Art.Font, TaskCount + " of " + MaxTasks +" tasks currently running", new Vector2(BaseDrawPosition.X, 20), Color.Black);
             for (int i = 0; i < Tasks.Count; i++)
             {
                 Task task = Tasks[i];
 
-                float YOffset = Art.Font.LineSpacing * i;
+                float YOffset = LastY;
+                //if (LastY != 0)
+                    //YOffset = LastY + Art.Font.LineSpacing;                
 
-                string text = "Name: " + task.Name + " Percent Complete: " + task.PercentComplete + "%";
-                Vector2 size = Art.Font.MeasureString(text);                
+                string text = task.Name + " " + (int)task.PercentComplete + "% Complete";
+                //Vector2 size = Art.Font.MeasureString(text);
+                
+                Rectangle completion = CalcCompletionRect(task);
+                completion.X = BaseArea.X;
+                completion.Y = (int)(BaseDrawPosition.Y +YOffset);
 
-                if (i == SelectedIndex)
-                {
-                    Rectangle rect = new Rectangle((int)BaseDrawPosition.X, (int)(BaseDrawPosition.Y + YOffset), (int)size.X, (int)size.Y);
-                    if (bSelecting)
-                        spriteBatch.Draw(Art.Pixel, rect, Color.Yellow);
-                }                
+                Color toDraw = Color.White;
+                if (bSelecting && i == SelectedIndex)
+                    toDraw = Color.Yellow;
+                spriteBatch.Draw(Art.TaskFrame, BaseDrawPosition + new Vector2(1, YOffset), RoundRectArea, toDraw);
+                spriteBatch.Draw(Art.Pixel, completion, Color.ForestGreen);
+                spriteBatch.Draw(Art.TaskFrame, BaseDrawPosition + new Vector2(1, YOffset), FrameArea, BaseColour);
+                spriteBatch.Draw(Art.TaskFrame, BaseDrawPosition + new Vector2(0, YOffset - 1), BorderArea, Color.Black);
 
-                spriteBatch.DrawString(Art.Font, text, BaseDrawPosition + new Vector2(0, YOffset), Color.Black);
+                spriteBatch.DrawString(Art.Font, text, BaseDrawPosition + new Vector2(2, YOffset + 5), Color.Black);
+                LastY += Art.Font.LineSpacing + 11;
             }
+            LastY = 1;            
         }
     }
 }

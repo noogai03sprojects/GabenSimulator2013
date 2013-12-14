@@ -17,7 +17,8 @@ namespace GabenSimulator2013
         float DesiredScrollOffset = 0;
         float ScrollOffset = 0;
 
-        Vector2 BaseDrawPosition = new Vector2(20, 50);
+        Vector2 BaseDrawPosition = Vector2.Zero;
+        Rectangle BaseArea = new Rectangle(20, 85, 350, 500);
 
         int SelectedIndex = 0;
 
@@ -32,6 +33,7 @@ namespace GabenSimulator2013
         public EmployeeManager()
         {
             Employees = new List<Employee>();
+            BaseDrawPosition = new Vector2(BaseArea.Left, BaseArea.Top);
         }
 
         public void AddEmployee()
@@ -103,8 +105,14 @@ namespace GabenSimulator2013
             SelectionHighlight = SelectionHighlight.Lerp(DesiredHighlight, 0.5f);
         }
 
+        private void DrawDivider(SpriteBatch spriteBatch, int YOffset)
+        {
+            spriteBatch.Draw(Art.Pixel, new Rectangle(BaseArea.Left, BaseArea.Top + YOffset, BaseArea.Width, 1), Color.Black);
+        }
+
         public void DrawEmployees(SpriteBatch spriteBatch)
         {
+            spriteBatch.Draw(Art.Pixel, BaseArea, Color.Gray);
             int num3Liners = 0;
             for (int i = 0; i < Employees.Count; i++)
             {
@@ -139,11 +147,12 @@ namespace GabenSimulator2013
                     //Rectangle rect = new Rectangle((int)BaseDrawPosition.X, (int)(BaseDrawPosition.Y + YOffset), (int)size.X, (int)size.Y);
                     //if (bSelecting)
                     DesiredHighlight = new Rectangle((int)BaseDrawPosition.X, (int)(BaseDrawPosition.Y + YOffset), (int)size.X, (int)size.Y);
-                    DesiredHighlight.Inflate(2, 2);
-                    spriteBatch.Draw(Art.Pixel, SelectionHighlight, Color.Yellow);
+                    DesiredHighlight.Inflate(-2, -2);
+                    spriteBatch.Draw(Art.Pixel, SelectionHighlight, Color.LightGray);
                     SelectorHeight = DesiredHighlight.Center.ToVector().Y;
                 }
                 spriteBatch.DrawString(Art.Font, text, BaseDrawPosition + new Vector2(0, YOffset), Color.Black);
+                DrawDivider(spriteBatch, (int)YOffset);
             }
             //foreach (Employee emp in Employees.Values)
             {

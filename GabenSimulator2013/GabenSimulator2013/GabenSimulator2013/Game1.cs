@@ -138,7 +138,13 @@ namespace GabenSimulator2013
                 TaskManager.Update();
                 Hypeometer.Update();
             }
-
+            if (Input.IsKeyPressed(Keys.P))
+            {
+                if (TimingManager.bRunning)
+                    TimingManager.StopTimers();
+                else
+                    TimingManager.StartTimers();
+            }
             // TODO: Add your update logic here
 
             //color = Color.Lerp(color, newColor, 0.01f);
@@ -170,7 +176,7 @@ namespace GabenSimulator2013
 
         public void TestHypeEvent()
         {
-            Background = Color.Red;
+            //Background = Color.Red;
         }
 
         /// <summary>

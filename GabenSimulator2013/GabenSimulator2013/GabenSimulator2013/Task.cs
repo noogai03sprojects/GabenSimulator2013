@@ -17,8 +17,15 @@ namespace GabenSimulator2013
         public float PercentComplete
         {
             get
+            {                            
+                return DecimalComplete * 100;
+            }
+        }
+        public float DecimalComplete
+        {
+            get
             {
-                float result = ((float)CurrentWork / (float)RequiredWork) * 100;                
+                float result = ((float)CurrentWork / (float)RequiredWork);
                 return result;
             }
         }

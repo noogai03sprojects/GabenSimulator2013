@@ -22,6 +22,8 @@ namespace GabenSimulator2013
         private Timer EmployeeTimer;
 
         private Stopwatch ScoreStopwatch;
+
+        public bool bRunning { get; private set; }
         //public ElapsedEventHandler UpdateTimer_Elapsed;
 
         public TimingManager()
@@ -38,12 +40,14 @@ namespace GabenSimulator2013
         {
             UpdateTimer.Start();
             EmployeeTimer.Start();
+            bRunning = true;
         }
 
         public void StopTimers()
         {
             UpdateTimer.Stop();
             EmployeeTimer.Stop();
+            bRunning = false;
         }
 
         private void Update(object sender, ElapsedEventArgs e)
